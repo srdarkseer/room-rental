@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn src.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
+
+    expose:
+      - 8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgres
+    ports:
+    - "${DATABASE_PORT}:${DATABASE_PORT}"
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+
+  # nginx:
+  #   build: ./nginx
+  #   volumes:
+  #     - static_volume:/home/app/web/static
+  #     - media_volume:/home/app/web/media
+  #   ports:
+  #     - "80:80"
+
+  #   depends_on:
+  #     - server
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
