@@ -19,6 +19,7 @@ def register_social_user(provider, user_id, email, name):
     else:
         user = {
             'email': email,
+            'name': name,
             'password': os.environ.get('SOCIAL_SECRET')
         }
 

@@ -1,14 +1,18 @@
 # serializers.py
 
 from rest_framework import serializers
-from .models import  Property, PropertyImage, PropertyPrice, PropertyLocation, PropertyStatus, PropertyType
+from .models import  Property, PropertyImage, PropertyPrice, PropertyLocation, PropertyType, Record, User
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['name','email', 'profile_pic']
 
 class PropertyTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyType
         fields = '__all__'
-        
 
 
 
@@ -34,9 +38,9 @@ class PropertyLocationSerializer(serializers.ModelSerializer):
         depth = 1
 
 
-class PropertyStatusSerializer(serializers.ModelSerializer):
+class PropertyRecordSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PropertyStatus
+        model = Record
         fields = '__all__'
 
 
@@ -45,11 +49,12 @@ class PropertySerializer(serializers.ModelSerializer):
     latest_price = serializers.SerializerMethodField()
     property_type = PropertyTypeSerializer()
     property_location = PropertyLocationSerializer()
-    property_status = serializers.SerializerMethodField()
+    property_record = serializers.SerializerMethodField()
+    property_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
-        exclude = ('property_price',)
+        exclude = ('property_price','record')
     
 
     def get_latest_price(self, obj):
@@ -58,12 +63,12 @@ class PropertySerializer(serializers.ModelSerializer):
             return PropertyPriceSerializer(latest_price).data
         return None
     
-    def get_property_status(self, obj):
-        property_status = PropertyStatus.objects.filter(property=obj).filter(end_date=None)
-        if property_status.exists():
-            return "not available"
-        else:
-            return "available"
- 
+    def get_property_record(self, obj):
+        property_record = Record.objects.filter(property=obj).order_by('start_date').first()
+        if property_record:
+            return PropertyRecordSerializer(property_record).data
+        return None
     
-    
+    def get_property_owner(self, obj):
+        porperty_owner = User.objects.filter(email=obj.property_owner).first()
+        return UserSerializer(porperty_owner).data

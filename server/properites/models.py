@@ -23,25 +23,25 @@ class PropertyLocation(models.Model):
     local_area = models.ForeignKey(LocalArea, on_delete=models.DO_NOTHING)
     remarks = models.TextField(blank=True)
 
-
-
-
-class PropertyStatus(models.Model):
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
     
+class PropertyStatus(models.TextChoices):
+    AVAILABLE = 'AVAILABLE', 'Avaliable'
+    RENTED = 'RENTED', 'Rented'
 
+
+    
+class Record(models.Model):
+    status = models.CharField(choices=PropertyStatus.choices, default=PropertyStatus.AVAILABLE)
+    start_date = models.DateField(auto_now=True)
+    
 
 class Property(models.Model):
     property_owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    property_name = models.CharField(max_length=200)
-    property_description = models.TextField()
-    property_type = models.ForeignKey(PropertyType, on_delete=models.DO_NOTHING)
-    no_bedrooms = models.IntegerField()
+    property_name = models.CharField(max_length=200, db_index=True)
+    property_description = models.TextField(db_index=True)
+    property_type = models.ForeignKey(PropertyType, on_delete=models.DO_NOTHING, db_index=True)
+    no_bedrooms = models.IntegerField(db_index=True)
     property_image = models.ManyToManyField(PropertyImage)
-    property_price = models.ManyToManyField(PropertyPrice)
-    property_location = models.OneToOneField(PropertyLocation, on_delete=models.DO_NOTHING)
-    property_status = models.ManyToManyField(PropertyStatus)
-
-
-    
+    property_price = models.ManyToManyField(PropertyPrice, db_index=True)
+    property_location = models.OneToOneField(PropertyLocation, on_delete=models.DO_NOTHING, db_index=True)
+    record = models.ManyToManyField(Record, db_index=True)

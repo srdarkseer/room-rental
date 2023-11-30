@@ -35,6 +35,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True, db_index=True)
+    name = models.CharField(max_length=255)
+    google_user_id = models.CharField(max_length=255)
+    profile_pic = models.CharField(max_length=500)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

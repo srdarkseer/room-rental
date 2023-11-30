@@ -48,3 +48,4 @@ uritemplate
 urllib3
 psycopg2-binary
 Pillow
+django-filter

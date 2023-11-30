@@ -19,7 +19,7 @@ RUN apk update \
 # lint
 RUN pip install --upgrade pip
 # RUN pip install flake8==3.9.2
-COPY ./server .
+COPY . .
 # RUN flake8 --ignore=E501,F401 .
 
 # install dependencies
@@ -60,7 +60,7 @@ RUN sed -i 's/\r$//g'  $APP_HOME/entrypoint.sh
 RUN chmod +x  $APP_HOME/entrypoint.sh
 
 # copy project
-COPY ./server $APP_HOME
+COPY . $APP_HOME
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
